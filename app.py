@@ -8,7 +8,6 @@ import faicons as fa
 import great_tables as gt
 from great_tables import html, style, google_font, loc
 
-
 # Load data and compute static values
 from shared import app_dir
 from shiny import App, reactive, render, ui
@@ -95,7 +94,7 @@ def server(input, output, session):
 
     @render.ui
     def tot_pop():
-        # extract households value for value box
+        # extract total population value for value box
 
         val = select_ofm_data().loc[0, 'HHPOP'] + select_ofm_data().loc[0, 'GQPOP']
         val = "{:,}".format(round(val))
@@ -111,7 +110,7 @@ def server(input, output, session):
 
     @render.ui
     def hu():
-        # extract households value for value box
+        # extract housing units value for value box
 
         val = select_ofm_data().loc[0, 'HU']
         val = "{:,}".format(round(val))
