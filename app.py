@@ -5,14 +5,12 @@
 
 import psrcelmerpy
 import faicons as fa
-# import plotly.express as px
 import great_tables as gt
-from great_tables import html, style, google_font
+from great_tables import html, style, google_font, loc
+
 
 # Load data and compute static values
 from shared import app_dir
-from shinywidgets import output_widget, render_plotly
-
 from shiny import App, reactive, render, ui
 
 # connect to Elmer
@@ -60,16 +58,16 @@ app_ui = ui.page_sidebar(
             value = ui.output_ui("tot_pop"), 
             showcase = icons["people"]
         ),
+         ui.value_box(
+            title = "Housing Units",
+            value = ui.output_ui("hu"),
+            showcase = icons["housing_unit"]
+        ),
         ui.value_box(
             title = "Households",
             value = ui.output_ui("hh"),
             showcase = icons["households"]
-        ),
-        ui.value_box(
-            title = "Housing Units",
-            value = ui.output_ui("hu"),
-            showcase = icons["housing_unit"]
-        )
+        )       
     ),
     ui.layout_columns(
         ui.card(
@@ -132,14 +130,24 @@ def server(input, output, session):
 
         return df_clean
 
-    @render.ui
-    def table():
-        # render entire table
-  
+    @reactive.event(input.go)
+    def select_year_row():
+        # identify index of row based on selected year
+
+        df = prep_table()
+        
+        row = df[df["estimate_year"] == int(input.year())]
+        index = row.index.item()
+
+        return index
+    
+    @reactive.calc
+    def gt_table():
+        # prep GT table
+
         table = (
             gt.GT(data = prep_table())
             .cols_label(
-                # publication_dim_id = "Publication ID",
                 estimate_year = "Estimate Year",
                 HU = 'Housing Unit',
                 OHU = "Households",
@@ -153,11 +161,18 @@ def server(input, output, session):
             .tab_stub(rowname_col = "estimate_year", groupname_col = "group")
             .cols_hide(columns="publication_dim_id")
             .opt_table_font(font=[google_font(name="Poppins"), "Cochin", "Serif"])
-       
         )
-    
         return table
-        # return render.DataGrid(df)
+
+    @render.ui
+    def table():
+        # render table. Styling based on whether 'Enter' has been clicked        
+
+        if(input.go() >= 1):
+           return gt_table().tab_style(style = style.fill(color="#E3C9E3"),
+                       locations = loc.body(columns = ["HU", "OHU", "GQPOP", "HHPOP"], rows=[select_year_row()]))
+        else:
+            return gt_table()
 
 
 app = App(app_ui, server)
