@@ -72,7 +72,6 @@ app_ui = ui.page_sidebar(
     ui.layout_columns(
         ui.card(
             ui.card_header("Estimates at a Glance"), 
-            # ui.output_data_frame("table"), 
             ui.output_ui("table"),
             full_screen=True
         )
