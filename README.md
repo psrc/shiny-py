@@ -11,4 +11,15 @@
 
 ## Deploy
 
-`rsconnect deploy shiny C:/Users/CLam/github/shiny-py --name psrcwa --title test-shiny-py`  
+- `pip install rsconnect-python`
+- Set up machine with shinyapps credentials:
+
+    - Login to PSRC's shinyapps.io account. 
+    - Navigate to Account > Tokens. 
+    - Select a token and click 'Show'.
+    - Select 'With Pyhon'
+    - Show all tokens and secret and Copy to clipboard
+    - Paste and run in terminal
+    
+- To deploy: `rsconnect deploy shiny C:/Users/CLam/github/shiny-py --name psrcwa --title test-shiny-py1`  
+- URL: https://psrcwa.shinyapps.io/test-shiny-py1/
