@@ -3,33 +3,14 @@
 # https://github.com/posit-dev/py-shiny-templates/blob/main/dashboard-tips/app-core.py
 # https://www.appsilon.com/post/great-tables
 
-import psrcelmerpy
 import faicons as fa
 import great_tables as gt
 from great_tables import html, style, google_font, loc
 
 # Load data and compute static values
-from shared import app_dir
+from shared import app_dir, df
 from shiny import App, reactive, render, ui
 
-# connect to Elmer
-e_conn = psrcelmerpy.ElmerConn()
-
-# combine intercensal and post-censal data
-sql_query = """SELECT a.publication_dim_id, a.estimate_year, HU = SUM(a.housing_units), OHU = SUM(a.occupied_housing_units), GQPOP = SUM(a.group_quarters_population), HHPOP = SUM(a.household_population)
-                    FROM ofm.estimate_facts AS a
-                    WHERE a.publication_dim_id = 10 AND a.estimate_year BETWEEN 2020 AND 2024
-                    GROUP BY a.estimate_year, a.publication_dim_id
-                    UNION ALL
-                    SELECT a.publication_dim_id, a.estimate_year, HU = SUM(a.housing_units), OHU = SUM(a.occupied_housing_units), GQPOP = SUM(a.group_quarters_population), HHPOP = SUM(a.household_population)
-                    FROM ofm.estimate_facts AS a
-                    WHERE a.publication_dim_id = 11 AND a.estimate_year BETWEEN 2010 AND 2019
-                    GROUP BY a.estimate_year, a.publication_dim_id
-                    ORDER BY estimate_year
-                    ;
-            """
-
-df = e_conn.get_query(sql_query)
 years = df['estimate_year'].unique().tolist()
 
 icons = {
